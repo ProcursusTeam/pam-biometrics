@@ -49,15 +49,15 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
     }
 
     CFStringRef reason;
-    const char *user[32];
-    pam_get_user(pamh, (const void **)&user, NULL);
+    const char *user = NULL;
+    pam_get_user(pamh, &user, NULL);
 
     char *cmd = getenv("_");
 
     if (cmd != NULL) {
-        reason = CFStringCreateWithFormat(NULL, NULL, CFSTR("%s is requesting to authenticate as %s"), basename(cmd), *user);
+        reason = CFStringCreateWithFormat(NULL, NULL, CFSTR("%s is requesting to authenticate as %s"), basename(cmd), user);
     } else {
-        reason = CFStringCreateWithFormat(NULL, NULL, CFSTR("requesting to authenticate as %s"), *user);
+        reason = CFStringCreateWithFormat(NULL, NULL, CFSTR("requesting to authenticate as %s"), user);
     }
 
     runLoop = CFRunLoopGetCurrent();
