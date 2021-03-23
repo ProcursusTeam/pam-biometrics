@@ -13,9 +13,12 @@ const char *prompt = NULL;
 bool disableOnSSH = false;
 bool allowWatch = false;
 LAPolicy policy = LAPolicyDeviceOwnerAuthenticationWithBiometrics;
+
 CFRunLoopRef runLoop;
+LAContext *context;
 
 void TimerCallback(CFRunLoopTimerRef timer, void* info) {
+    [context invalidate];
     CFRunLoopStop(runLoop);
 }
 
@@ -41,7 +44,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
     }
 
     __block BOOL result = NO;
-    LAContext* context = [[LAContext alloc] init];
+    context = [[LAContext alloc] init];
 
     // check if device supports biometrics
     if (![context canEvaluatePolicy:policy error:nil]) {
