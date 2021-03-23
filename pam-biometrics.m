@@ -15,6 +15,9 @@
 int timeout = 10;
 const char *prompt = NULL;
 bool disableOnSSH = false;
+bool allowWatch = false;
+LAPolicy policy = LAPolicyDeviceOwnerAuthenticationWithBiometrics;
+
 
 void TimerCallback(CFRunLoopTimerRef timer, void* info) {
     CFRunLoopStop(CFRunLoopGetCurrent());
@@ -31,15 +34,21 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
         if (COMPARE(argv[i], "disableonssh")) {
             disableOnSSH = true;
         }
+        if (COMPARE(argv[i], "allowwatch")) {
+            allowWatch = true;
+        }
     }
 
     if (disableOnSSH && isSSH()) return PAM_IGNORE;
+    if (allowWatch) {
+        policy = LAPolicyDeviceOwnerAuthenticationWithBiometricsOrWatch;
+    }
 
     __block BOOL result = NO;
     LAContext* context = [[LAContext alloc] init];
 
     // check if device supports biometrics
-    if (![context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil]) {
+    if (![context canEvaluatePolicy:policy error:nil]) {
         return PAM_IGNORE;
     }
 
@@ -55,7 +64,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
         reason = CFStringCreateWithFormat(NULL, NULL, CFSTR("requesting to authenticate as %s"), *user);
     }
 
-    [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
+    [context evaluatePolicy:policy
             localizedReason:(__bridge NSString *)reason
             reply:^(BOOL success, NSError* error) {
         result = success;
