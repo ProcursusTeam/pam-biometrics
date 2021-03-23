@@ -48,6 +48,8 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
         return PAM_IGNORE;
     }
 
+    converse(pamh, PAM_TEXT_INFO, "Use FaceID/TouchID to authenticate...");
+
     CFStringRef reason;
     const char *user = NULL;
     pam_get_user(pamh, &user, NULL);
