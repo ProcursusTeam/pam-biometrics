@@ -8,10 +8,6 @@
 #include <security/pam_modules.h>
 #include "util.h"
 
-#define MESSAGE "PAM Authentication"
-
-#define COMPARE(X, Y) (strncmp(X, Y, strlen(Y)) == 0)
-
 int timeout = 10;
 const char *prompt = NULL;
 bool disableOnSSH = false;
