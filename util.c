@@ -1,7 +1,9 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <security/pam_modules.h>
+#include <security/pam_appl.h>
 
 bool isSSH() {
   return getenv("SSH_CLIENT") || getenv("SSH_CONNECTION") || getenv("SSH_TTY");

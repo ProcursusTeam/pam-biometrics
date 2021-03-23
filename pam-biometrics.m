@@ -1,5 +1,6 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <LocalAuthentication/LocalAuthentication.h>
+#include <libgen.h>
 
 #define PAM_SM_AUTH
 #define PAM_SM_ACCOUNT
