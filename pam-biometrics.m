@@ -52,7 +52,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
     if (cmd != NULL) {
         reason = CFStringCreateWithFormat(NULL, NULL, CFSTR("%s is requesting to authenticate as %s"), basename(cmd), *user);
     } else {
-        reason = CFStringCreateWithFormat(NULL, NULL, CFSTR("requesting to authenticate  as %s"), *user);
+        reason = CFStringCreateWithFormat(NULL, NULL, CFSTR("requesting to authenticate as %s"), *user);
     }
 
     [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
