@@ -13,10 +13,10 @@ const char *prompt = NULL;
 bool disableOnSSH = false;
 bool allowWatch = false;
 LAPolicy policy = LAPolicyDeviceOwnerAuthenticationWithBiometrics;
-
+CFRunLoopRef runLoop;
 
 void TimerCallback(CFRunLoopTimerRef timer, void* info) {
-    CFRunLoopStop(CFRunLoopGetCurrent());
+    CFRunLoopStop(runLoop);
 }
 
 PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, const char** argv) {
@@ -60,11 +60,13 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
         reason = CFStringCreateWithFormat(NULL, NULL, CFSTR("requesting to authenticate as %s"), *user);
     }
 
+    runLoop = CFRunLoopGetCurrent();
+
     [context evaluatePolicy:policy
             localizedReason:(__bridge NSString *)reason
             reply:^(BOOL success, NSError* error) {
         result = success;
-        CFRunLoopStop(CFRunLoopGetCurrent());
+        CFRunLoopStop(runLoop);
     }];
 
     CFRunLoopTimerContext ctx = { 0, NULL, NULL, NULL, NULL };
@@ -72,7 +74,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
         NULL, CFAbsoluteTimeGetCurrent() + timeout, 0, 0, 0, TimerCallback, &ctx);
 
     // Add timeout
-    CFRunLoopAddTimer(CFRunLoopGetCurrent(), timer, kCFRunLoopDefaultMode);
+    CFRunLoopAddTimer(runLoop, timer, kCFRunLoopDefaultMode);
 
     CFRunLoopRun();
 
