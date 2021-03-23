@@ -43,12 +43,24 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
         return PAM_IGNORE;
     }
 
+    CFStringRef reason;
+    const char *user[32];
+    pam_get_user(pamh, (const void **)&user, NULL);
+
+    char *cmd = getenv("_");
+
+    if (cmd != NULL) {
+        reason = CFStringCreateWithFormat(NULL, NULL, CFSTR("%s is requesting to authenticate as %s"), basename(cmd), *user);
+    } else {
+        reason = CFStringCreateWithFormat(NULL, NULL, CFSTR("requesting to authenticate  as %s"), *user);
+    }
+
     [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
-             localizedReason:@"authenticate"
-             reply:^(BOOL success, NSError* error) {
-                result = success;
-                CFRunLoopStop(CFRunLoopGetCurrent());
-             }];
+            localizedReason:(__bridge NSString *)reason
+            reply:^(BOOL success, NSError* error) {
+        result = success;
+        CFRunLoopStop(CFRunLoopGetCurrent());
+    }];
 
     CFRunLoopTimerContext ctx = { 0, NULL, NULL, NULL, NULL };
     CFRunLoopTimerRef timer = CFRunLoopTimerCreate(
