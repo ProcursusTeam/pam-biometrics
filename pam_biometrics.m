@@ -65,7 +65,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
             allowWatch = true;
     }
 
-    if (disableOnSSH && isSSH()) {
+    if (disableOnSSH && isRemote()) {
         retval = PAM_IGNORE;
         goto cleanup;
     }
