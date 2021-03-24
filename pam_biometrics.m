@@ -40,7 +40,7 @@ void TimerCallback(CFRunLoopTimerRef timer, void* info) {
 PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, const char** argv) {
     os_log_debug(PAM_LOG, "pam_tid: pam_sm_authenticate");
 
-    __block int retval = PAM_AUTH_ERR;
+    int retval = PAM_AUTH_ERR;
     const char *user = NULL;
     struct passwd *pwd = NULL;
     struct passwd pwdbuf;
