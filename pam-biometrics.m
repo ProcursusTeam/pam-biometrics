@@ -50,7 +50,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
     if (bufsize == -1) {
         bufsize = 2 * PATH_MAX;
     }
-    
+
     /* get information about user to authenticate for */
     char *buffer = malloc(bufsize);
     if (pam_get_user(pamh, &user, NULL) != PAM_SUCCESS || !user ||
@@ -74,8 +74,10 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
             allowWatch = true;
     }
 
-    if (disableOnSSH && isSSH())
+    if (disableOnSSH && isSSH()) {
         retval = PAM_IGNORE;
+        goto cleanup;
+    }
     if (allowWatch)
         policy = LAPolicyDeviceOwnerAuthenticationWithBiometricsOrWatch;
 
@@ -83,9 +85,10 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
     context = [[LAContext alloc] init];
 
     // check if device supports biometrics
-    if (![context canEvaluatePolicy:policy error:nil])
+    if (![context canEvaluatePolicy:policy error:nil]) {
         retval = PAM_IGNORE;
-
+        goto cleanup;
+    }
     converse(pamh, PAM_TEXT_INFO, "Use FaceID/TouchID to authenticate...");
 
     CFStringRef reason;
@@ -104,7 +107,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
             localizedReason:(__bridge NSString *)reason
             reply:^(BOOL success, NSError* error) {
         if (success)
-		    retval = PAM_SUCCESS;
+            retval = PAM_SUCCESS;
         CFRunLoopStop(runLoop);
     }];
 
