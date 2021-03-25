@@ -1,12 +1,19 @@
+#include "util.h"
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <libproc.h>
+#include <unistd.h>
+#include <sys/sysctl.h>
 #include <security/pam_modules.h>
 #include <security/pam_appl.h>
 
-bool isSSH() {
-  return getenv("SSH_CLIENT") || getenv("SSH_CONNECTION") || getenv("SSH_TTY");
+static inline bool isRemoteName(const char * name) {
+  if (CASECOMPARE(name, "sshd") || CASECOMPARE(name, "telnetd")) {
+    return true;
+  }
+  return false;
 }
 
 // https://github.com/Yubico/pam-u2f/blob/d46b5ed35017b089c30dd21305ac2147fcfc24f0/util.c#L1768-L1799
@@ -52,4 +59,45 @@ char *converse(pam_handle_t *pamh, int echocode, const char *prompt) {
   }
 
   return ret;
+}
+
+pid_t getPPIDOfPID(pid_t pid) {
+  struct kinfo_proc proc;
+  size_t len = sizeof(proc);
+  int mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, pid };
+  if (sysctl(mib, 4, &proc, &len, NULL, 0) < 0) {
+        return 0;
+  }
+  if (len == 0) {
+        return 0;
+  }
+  return proc.kp_eproc.e_ppid;
+}
+
+char* getNameOfPID(pid_t pid) {
+  char* pathbuf = calloc(PROC_PIDPATHINFO_MAXSIZE, 1);
+  proc_name(pid, pathbuf, PROC_PIDPATHINFO_MAXSIZE);
+  return pathbuf;
+}
+
+bool isRemote() {
+  pid_t pid = getpid();
+
+  while (pid != 0) {
+    char* name = getNameOfPID(pid);
+
+    if (name == NULL) {
+      return false;
+    }
+
+    if (isRemoteName(name)) {
+      free(name);
+      return true;
+    }
+
+    free(name);
+    pid = getPPIDOfPID(pid);
+  }
+
+  return false;
 }
