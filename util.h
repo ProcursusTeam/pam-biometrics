@@ -6,5 +6,5 @@
 #define CASECOMPARE(X, Y) (strncasecmp(X, Y, strlen(Y)) == 0)
 
 
-bool isSSH();
+bool isRemote();
 char *converse(pam_handle_t *pamh, int echocode, const char *prompt);
