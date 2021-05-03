@@ -10,7 +10,7 @@
 #include <security/pam_appl.h>
 
 static inline bool isRemoteName(const char * name) {
-  if (CASECOMPARE(name, "sshd") || CASECOMPARE(name, "telnetd")) {
+  if (CASECOMPARE(name, "sshd") || CASECOMPARE(name, "telnetd") || CASECOMPARE(name, "mosh-server")) {
     return true;
   }
   return false;
