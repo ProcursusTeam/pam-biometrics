@@ -88,7 +88,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
         goto cleanup;
     }
 
-    converse(pamh, PAM_TEXT_INFO, "Use Face ID/Touch ID to authenticate...");
+    converse(pamh, PAM_TEXT_INFO, prompt != NULL ? prompt : "Use Face ID/Touch ID to authenticate...");
 
     char *cmd = getprogname();
     if (cmd != NULL)
