@@ -7,7 +7,7 @@ PAM module for Touch ID and Face ID authentication.
 | Argument | Description |
 | -------- | ----------- |
 | timeout=*seconds* | Sets the timeout for the authentication prompt |
-| prompt=*text* | Sets the prompt text (TouchID only) |
+| prompt=*text* | Sets the prompt text |
 | disableonssh | disables the module in SSH environments |
 | allowwatch | Allows Apple Watch authentication (macOS only) |
 
