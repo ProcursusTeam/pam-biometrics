@@ -3,10 +3,10 @@
 .\" SPDX-License-Identifier: BSD-2-Clause
 .\"
 .Dd February 27, 2023
-.Dt PAM-BIOMETRICS 8
+.Dt PAM_BIOMETRICS 8
 .Os
 .Sh NAME
-.Nm pam-biometrics
+.Nm pam_biometrics
 .Nd PAM module for FaceID/TouchID authentication
 .Sh SYNOPSIS
 .Op Ar service-name
@@ -15,11 +15,11 @@
 pam_biometrics
 .Op Ar options
 .Sh DESCRIPTION
-.Nm pam-biometrics
+.Nm pam_biometrics
 is a PAM module that allows users to authenticate with FaceID or TouchID.
 .Pp
 The following options can be used to set up
-.Nm pam-biometrics :
+.Nm pam_biometrics :
 .Bl -tag -width -indent
 .It Sy timeout
 Set a timeout period for authentication, in seconds.
@@ -32,19 +32,17 @@ Make use of your Apple Watch for authentication instead.
 .El
 .Sh EXAMPLES
 Setting up
-.Nm pam-biometrics
+.Nm pam_biometrics
 with a timeout of 10 seconds
 .Dl auth sufficient pam_biometrics.so timeout=10
 .Pp
 Setting up
-.Nm pam-biometrics
+.Nm pam_biometrics
 with a custom message and timeout, and disabling it on SSH
 .Dl auth required pam_biometrics.so timeout=10 prompt="another message" disableonssh
 .Sh SEE ALSO
 .Xr pam.conf 5 ,
 .Xr pam 8
 .Sh BUGS
-Report
-.Nm pam-biometrics
-bugs to the issue tracker:
+Report bugs to the issue tracker:
 .Lk https://github.com/ProcursusTeam/pam-biometrics/issues
