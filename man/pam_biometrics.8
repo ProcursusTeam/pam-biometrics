@@ -31,15 +31,14 @@ Disable the PAM module when used over SSH.
 Make use of your Apple Watch for authentication instead.
 .El
 .Sh EXAMPLES
-Setting up
-.Nm pam_biometrics
-with a timeout of 10 seconds
-.Dl auth sufficient pam_biometrics.so timeout=10
+Setting a timeout of 10 seconds for any service
 .Pp
-Setting up
-.Nm pam_biometrics
-with a custom message and timeout, and disabling it on SSH
-.Dl auth required pam_biometrics.so timeout=10 prompt="another message" disableonssh
+.Dl "auth sufficient pam_biometrics.so timeout=10"
+.Pp
+Setting a custom message and timeout to any service, while disabling
+the configuration when connecting through SSH
+.Pp
+.Dl "auth required pam_biometrics.so timeout=10 prompt=Find\ your\ phone disableonssh"
 .Sh SEE ALSO
 .Xr pam.conf 5 ,
 .Xr pam 8
