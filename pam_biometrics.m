@@ -7,6 +7,7 @@
 
 #include <pwd.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <os/log.h>
 #include <os/activity.h>
 #include <CoreFoundation/CoreFoundation.h>
@@ -72,6 +73,12 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
     if (allowWatch)
         policy = LAPolicyDeviceOwnerAuthenticationWithBiometricsOrWatch;
 
+    uid_t ruid = getuid();
+    uid_t euid = geteuid();
+    if (euid != ruid) {
+        seteuid(ruid);
+    }
+
     context = [[LAContext alloc] init];
 
     // check if device supports biometrics
@@ -116,6 +123,9 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t* pamh, int flags, int argc, cons
     CFRunLoopRun();
 
 cleanup:
+    if (geteuid() != euid) {
+        seteuid(euid);
+    }
 	os_log_debug(PAM_LOG, "pam_biometrics: pam_sm_authenticate returned %d", retval);
     return retval;
 }
